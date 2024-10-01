@@ -12,6 +12,8 @@ import os
 import time
 import functools
 import uuid
+import traceback
+import sys
 from typing import Dict, Union, Any, Optional, Tuple, List
 
 
@@ -304,7 +306,8 @@ class Round:
                 self._load_round_state(previous_state_id)
             except Exception:
                 # don't send error details
-                return self._send_round_reply(success=False, message="Can't read previous node state.")
+                previous_state_id = None
+                #return self._send_round_reply(success=False, message="Can't read previous node state.")
 
         # Load model parameters received from researcher
         try:
@@ -368,7 +371,8 @@ class Round:
                     rtime_after = time.perf_counter()
                     ptime_after = time.process_time()
                 except Exception as exc:
-                    error_message = f"Cannot train model in round: {repr(exc)}"
+                    error_message = f"Cannot train model in round: {repr(exc)}; {traceback.format_exc()}"
+                    traceback.print_exc(limit=20, file=sys.stdout)
                     return self._send_round_reply(success=False, message=error_message)
 
             # Collect Optimizer auxiliary variables, if any.

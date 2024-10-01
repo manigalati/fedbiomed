@@ -454,6 +454,11 @@ class TorchTrainingPlan(BaseTrainingPlan, metaclass=ABCMeta):
         # - it should be done by deleting the object
         # - and some gpu memory remains used until process (cuda kernel ?) finishes
 
+        #MANI
+        del self._model.model.clip_loss
+        import gc
+        gc.collect()
+        
         self._model.send_to_device(self._device_init)
         torch.cuda.empty_cache()
 

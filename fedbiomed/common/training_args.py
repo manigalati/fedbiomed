@@ -353,7 +353,11 @@ class TrainingArgs:
             },
             "random_seed": {
                 "rules": [cls.optional_type(typespec=int, argname='random_seed')], "required": True, "default": None
-            }
+            },
+            #MANI
+            "gpu_num": {
+                "rules": [int], "required": True, "default": -1
+            },
         }
 
     def __str__(self) -> str:

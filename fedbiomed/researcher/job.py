@@ -327,7 +327,11 @@ class Job:
         # Loop over nodes, add node specific data and send train request
         messages = MessagesByNode()
 
-        for node in self._nodes:
+        #MANI
+        #for node in self._nodes:
+        for iter, node in enumerate(self._nodes):
+            msg['training_args'] = {**msg['training_args'], "gpu_num": iter}
+
             msg['dataset_id'] = self._data.data()[node]['dataset_id']
             msg['aux_vars'] = [aux_shared, aux_bynode.get(node, None)]
 
@@ -605,7 +609,7 @@ class Job:
         if not bkpt_training_replies:
             logger.warning("No Replies has been found in this breakpoint")
 
-        for round_ in range(len(bkpt_training_replies)):
+        for round_ in range(len(bkpt_training_replies)-1, len(bkpt_training_replies)):
             loaded_training_reply = bkpt_training_replies[round_]
             # reload parameters from file params_path
             for node in loaded_training_reply.values():

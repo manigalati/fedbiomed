@@ -106,7 +106,7 @@ def exp_exceptions(function):
                 '--------------------',
                 sep=os.linesep)
             # at most 5 backtrace entries to avoid too long output
-            traceback.print_exc(limit=5, file=sys.stdout)
+            traceback.print_exc(limit=20, file=sys.stdout)
             print('--------------------')
             logger.critical(f'Fed-BioMed stopped due to unknown error:\n{str(e)}')
 
@@ -1738,6 +1738,32 @@ class Experiment:
                 test_after = False
 
             increment = self.run_once(increase=False, test_after=test_after)
+            #MANI
+            import gc
+            """import sys
+            from types import ModuleType, FunctionType
+            BLACKLIST = type, ModuleType, FunctionType
+            def getsize(obj):
+                if isinstance(obj, BLACKLIST):
+                    raise TypeError('getsize() does not take argument of type: '+ str(type(obj)))
+                seen_ids = set()
+                size = 0
+                objects = [obj]
+                while objects:
+                    need_referents = []
+                    for obj in objects:
+                        if not isinstance(obj, BLACKLIST) and id(obj) not in seen_ids:
+                            seen_ids.add(id(obj))
+                            size += sys.getsizeof(obj)
+                            need_referents.append(obj)
+                    objects = gc.get_referents(*need_referents)
+                return size
+            print("SIZES: ", getsize(self), getsize(self._job))"""
+            if self._round_current-2 in self._aggregated_params:
+                del self._aggregated_params[self._round_current-2]#['params']
+            if self._round_current-2 in self._job.training_replies:
+                del self._job.training_replies[self._round_current-2]
+            gc.collect()
 
             if increment == 0:
                 # should not happen
@@ -2127,8 +2153,10 @@ class Experiment:
             logger.critical(msg)
             raise FedbiomedExperimentError(msg)
 
-        for aggreg in aggregated_params.values():
-            aggreg['params'] = Serializer.load(aggreg['params_path'])
+        #for aggreg in aggregated_params.values():
+        #    aggreg['params'] = Serializer.load(aggreg['params_path'])
+        last_round = max(aggregated_params.keys())
+        aggregated_params[last_round]['params'] = Serializer.load(aggregated_params[last_round]['params_path'])
 
         return aggregated_params
 

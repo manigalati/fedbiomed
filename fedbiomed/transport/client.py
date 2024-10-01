@@ -39,7 +39,7 @@ class ClientStatus(Enum):
 GRPC_CLIENT_CONN_RETRY_TIMEOUT = 2
 
 # timeout in seconds of a request to the server for a task (payload) to run on the node
-GRPC_CLIENT_TASK_REQUEST_TIMEOUT = 60
+GRPC_CLIENT_TASK_REQUEST_TIMEOUT = 999999
 
 
 def is_server_alive(host: str, port: str):

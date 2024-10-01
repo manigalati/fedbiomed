@@ -95,6 +95,9 @@ class Node:
             request = NodeMessages.format_incoming_message(msg).get_dict()
             if command in ['train', 'secagg']:
                 # add training task to queue
+                #MANI
+                self.node_args["gpu_num"] = msg["training_args"]["gpu_num"]
+                request["model_args"] = {**request["model_args"], "node_args": self.node_args, "node_id": environ["ID"]}
                 self.add_task(request)
             elif command == 'secagg-delete':
                 self._task_secagg_delete(NodeMessages.format_incoming_message(msg))
